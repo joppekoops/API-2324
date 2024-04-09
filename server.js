@@ -12,6 +12,47 @@ app.set('view engine', 'ejs');
 app.engine('ejs', ejs.renderFile);
 app.use(cors());
 
+const getMovies = async (req, res) => {
+  try {
+
+    const movies = [];
+
+    for (var i = 1; i < 51; i++) {
+
+      const url = `https://api.themoviedb.org/3/movie/top_rated?page=${i}&adult=false`;
+      const options = {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          Authorization: 'Bearer ' + process.env.MOVIEDB_API_KEY
+        }
+      };
+
+      const response = await fetch(url, options);
+
+      const result = await response.json();
+
+      result.results.forEach(movie => movies.push(movie));
+    }
+
+    console.log(movies.length);
+
+    fs.writeFile('./movies.json', JSON.stringify(movies), err => {
+      if (err) {
+        console.error(err);
+      } else {
+        // file written successfully
+      }
+    });
+  }
+
+  catch (err) {
+    console.error(err);
+  }
+}
+
+getMovies();
+
 const getMoviePoster = async (id) => {
   try{
     const url = `https://api.themoviedb.org/3/movie/${id}/images?adult=false`;
