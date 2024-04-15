@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { App } from '@tinyhttp/app';
 import { logger } from '@tinyhttp/logger';
-import fs from 'node:fs';
+import fs from 'node:fs/promises';
 import ejs from 'ejs';
 import sirv from 'sirv';
 import cors from 'cors';
@@ -17,7 +17,7 @@ const getMovies = async (req, res) => {
 
     const movies = [];
 
-    for (var i = 1; i < 51; i++) {
+    for (var i = 1; i < 26; i++) {
 
       const url = `https://api.themoviedb.org/3/movie/top_rated?page=${i}&adult=false`;
       const options = {
@@ -35,7 +35,7 @@ const getMovies = async (req, res) => {
       result.results.forEach(movie => movies.push(movie));
     }
 
-    console.log(movies.length);
+    console.log(movies.length + " movies stored");
 
     fs.writeFile('./movies.json', JSON.stringify(movies), err => {
       if (err) {
@@ -51,7 +51,7 @@ const getMovies = async (req, res) => {
   }
 }
 
-getMovies();
+//getMovies();
 
 const getMoviePoster = async (id) => {
   try{
@@ -105,8 +105,6 @@ const getMovie = async (id, includeImage) => {
 
     }
 
-    console.log(json);
-
     return json;
   }
   catch (err) {
@@ -129,9 +127,15 @@ const getLatesMovieId = async () => {
 const getRandomMovie = async () => {
   try{
 
-    const randomMovieId = Math.floor(Math.random() * latestMovieId);
+    const movies = await JSON.parse(await fs.readFile("./movies.json"));
 
-    const movie = await getMovie(randomMovieId, true);
+    const randomMovieId = Math.floor(Math.random() * movies.length);
+
+    const movie = movies[randomMovieId];
+
+    const poster = await getMoviePoster(movie.id);
+
+    movie.empty_poster = poster;
 
     return movie;
   }
@@ -164,8 +168,6 @@ const eventsHandler = (req, res, next) => {
 
   const data = `data: ${JSON.stringify(facts)}\n\n`;
 
-  res.write(data);
-
   const clientId = Date.now();
 
   const newClient = {
@@ -175,7 +177,7 @@ const eventsHandler = (req, res, next) => {
 
   clients.push(newClient);
 
-  //setInterval(() => sendEventsToAll(),3000);
+  setTimeout(() => sendEventsToAll(),5000);
 
   req.on('close', () => {
     console.log(`${clientId} Connection closed`);
@@ -184,10 +186,10 @@ const eventsHandler = (req, res, next) => {
 }
 
 const sendEventsToAll = () => {
-  clients.forEach(client => client.res.write(`data: test\n\n`))
+  clients.forEach(client => client.res.write(`data: ${JSON.stringify({ question: 1, answers: ['film titel 1', 'film titel 2', 'film titel 3', 'film titel 4'], image: '/kXfqcdQKsToO0OUXHcrrNCHDBzO.jpg'})}\n\n`))
 }
 
-app.get('/events', eventsHandler);
+app.get('/events/', eventsHandler);
 
 app.get('/player', (req, res) => {
   res.render('pages/player');
@@ -197,4 +199,6 @@ app.get('/posters/', async (req, res) => {
   const movie = await getRandomMovie(req.params.id);
 
   res.render('pages/posters', {data: movie});
+
+  console.log('The movie is: ' + movie.title)
 });

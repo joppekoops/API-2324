@@ -9,8 +9,10 @@
 <body>
 	<% if (data.empty_poster) { %>
     	<img src="https://image.tmdb.org/t/p/original<%= data.empty_poster.file_path %>" alt="">
+    <% } else if (data.poster_path) { %>
+    	<img src="https://image.tmdb.org/t/p/original<%= data.poster_path %>" alt="">
     <% } else { %>
-    	<p>No poster available</p>
+    	<p>no poster available</p>
     <% } %>
 </body>
 </html>
