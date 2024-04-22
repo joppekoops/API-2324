@@ -1,7 +1,9 @@
+/* Reset */
 * {
 	box-sizing: border-box;
 }
 
+/*General styling*/
 body {
 	margin: 0;
 	padding: 1em;
@@ -17,6 +19,7 @@ body {
 	justify-content: space-between;
 }
 
+/*Logo*/
 header img {
 	width: 16em;
 	max-width: 100%;
@@ -46,8 +49,9 @@ hgroup p {
 	margin: 0;
 }
 
+/*buttons*/
 button {
-	--h: 50;
+	--h: 50; /*hue for the color*/
 	font-family: Verdana, Arial, sans-serif;
 	font-size: 1.5em;
 	padding: .375em .5em;
@@ -59,6 +63,7 @@ button {
 	cursor: pointer;
 	transition: .2s;
 	margin-bottom: 5px;
+	margin-right: 3px;
 }
 
 button:active {
@@ -79,7 +84,7 @@ button:active {
 	}
 }
 
-
+/*question on quiz master*/
 .question {
 	position: relative;
 	background-color: white;
@@ -117,10 +122,12 @@ button:active {
 	grid-row: 1;
 	font-size: 1.5em;
 	margin: 1rem;
+	width: 2ch;
+	text-align: right;
 }
 
 
-
+/*join and create forms*/
 .join-form, .create-form {
 	display: grid;
 	background-color: white;
@@ -140,10 +147,11 @@ button:active {
 .create-form form {
 	display: flex;
 	align-items: end;
-	grid-gap: 1em;
+	grid-gap: 2em;
 	flex-wrap: wrap;
 }
 
+/*answer forms*/
 .answer-buttons {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
@@ -190,6 +198,8 @@ button:active {
 	}
 }
 
+/*general input styling*/
+
 label {
 	font-size: 1.5em;
 	display: grid;
@@ -217,18 +227,27 @@ button[disabled] {
 }
 
 .input-group {
+	position: relative;
 	margin-bottom: 2em;
+}
+
+.input-group span {
+	position: absolute;
+	right: 1.5em;
+	bottom: calc(.375em + 2px);
 }
 
 .create-form .input-group {
 	margin-bottom: 0;
 }
 
+/* form error message*/
 .error {
 	color: lch(39 141 47);;
 	margin: 0;
 }
 
+/* countdown and loader states*/
 .countdown {
 	animation: timer 1s;
 	animation-iteration-count: var(--time);
@@ -259,12 +278,14 @@ button[disabled] {
 	animation: rotate 1s infinite;
 }
 
+/*Animation for loader*/
 @keyframes rotate {
 	to{
 		transform: rotate(1turn);
 	}
 }
 
+/*Animation for timer*/
 @keyframes timer {
 	0% {
 		transform: scale(100);
@@ -277,6 +298,7 @@ button[disabled] {
 	}
 }
 
+/*Scoreboard styling*/
 .scoreboard {
 	background-color: white;
 	border-radius: .75em;
@@ -344,4 +366,20 @@ li div:last-of-type {
 
 .scoreboard li:nth-of-type(3):before {
 	content: '🥉';
+}
+
+/*player list styling*/
+.player-list {
+	list-style: none;
+	display: flex;
+	max-width: 40em;
+	flex-wrap: wrap;
+	gap: 1em;
+}
+
+.player-list li {
+	padding: .375em .5em;
+	border-radius: .375em;
+	background-color: #fff7;
+	font-size: 1.5em;
 }

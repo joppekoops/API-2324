@@ -2,8 +2,8 @@ const eventSrc = new EventSource('/events/player');
 const buttons = document.querySelectorAll('button');
 const main = document.querySelector('main');
 
+// if there is an event fill the data in the main
 eventSrc.onmessage = async (event) => {
-	//const data = await (JSON.parse(event.data));
 
 	if (event.data != 'undefined') {
 
@@ -11,15 +11,13 @@ eventSrc.onmessage = async (event) => {
 
 		main.innerHTML = eventData;
 	}
-	// buttons.forEach((button, i) => {
-	// 	button.innerHTML = data.answers[i];
-	// 	questionNumberInput.value = data.question;
-	// });
 
 }
 
 let countdownSound;
 let music;
+
+//Old code for submitting the form without reloading
 
 // for (const form of document.forms) {
 

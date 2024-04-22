@@ -1,5 +1,8 @@
 # API @cmda-minor-web 2023 - 2024
 
+
+![Een laptop met de quiz master app met een poster en een telefoon met vier mogelijke titels](./readme-images/mockup.webp)
+
 ## Installatie
 1. Clone de code
 ```
@@ -27,8 +30,6 @@ npm start
 
 5. Laad nieuwe films door naar `localhost:3000/getmovies` te gaan.
 
-
-![Een laptop met de quiz master app met een poster en een telefoon met vier mogelijke titels](./readme-images/mockup.webp)
 
 ## 💡 Mijn idee
 Mijn concept is een quiz applicatie zoals Kahoot, maar dan met filmposters. Net als Kahoot is er één quiz master en meerdere spelers. Elke vraag bestaat uit een random filmposter, waarbij het de juiste titel moet worden gekozen. Naast de juiste titel staan er nog drie andere random film titels als mogelijke antwoorden.

@@ -70,11 +70,10 @@ const getMovies = async (req, res) => {
   }
 }
 
-//getMovies();
-
 // Fuction for getting a poster from TMDB
 const getMoviePoster = async (id) => {
   try{
+    // Request all the images from a movie with specific id
     const url = `https://api.themoviedb.org/3/movie/${id}/images?adult=false`;
     const options = {
       method: 'GET',
@@ -91,7 +90,7 @@ const getMoviePoster = async (id) => {
     // Get the poster with no language (almost always without text)
     const poster = json.posters.find(poster => poster.iso_639_1 === null);
 
-    // Return the poster is one is found
+    // Return the poster if one is found
     if(poster) {
       return poster;
     } else {
@@ -135,17 +134,6 @@ const getMovie = async (id, includeImage) => {
   }
 }
 
-// Fuction for getting the latest movie id
-const getLatesMovieId = async () => {
-  try{
-    const movie = await getMovie('latest', false);
-    return movie.id;
-  }
-  catch (err) {
-    console.error(err);
-  }
-}
-
 // Fuction for getting a random movie from the local movies array
 const getRandomMovie = async () => {
   try{
@@ -172,10 +160,13 @@ const getRandomMovie = async () => {
   }
 }
 
-
+// Function for shuffling an array (fisher-yates)
 const shuffle = (array) => {
+  // copy the array to a temporary array
   let temp = [...array];
+  // create a new array for returning
   let newArray = [];
+  // for every item in the array pick random one, put in the new array, remove from temporary array
   for (let i = 0; i < array.length; i++) {
     const randomIndex = Math.floor(Math.random() * temp.length);
     newArray.push(temp[randomIndex]);
@@ -187,11 +178,52 @@ const shuffle = (array) => {
 
 // ROUTES
 
+// Home page (not really useful)
 app.get('/', (req, res) => {
     res.render('pages/index', {docTitle: 'The Movie Poster Quiz'});
 });
 
+// Status for checking values and who is connected
 app.get('/status', (req, res) => res.json({players: players.length, scoreboard: scoreboard}));
+
+
+// EVENT HANDLERS
+
+// scoreboard updates event
+let scoreboardWatchers = [];
+
+const scoreboardEventsHandler = async (req, res) => {
+  const headers = {
+    'Content-Type': 'text/event-stream',
+    'Connection': 'keep-alive',
+    'Cache-Control': 'no-cache'
+  };
+  res.writeHead(200, headers);
+
+  const playerListContent = await ejs.renderFile('./views/partials/player-list.ejs', {scoreboard});
+  res.write(`data: ${playerListContent.replace(/\n/g, '')}\n\n`);
+
+  const clientId = Date.now();
+
+  const newClient = {
+    id: clientId,
+    res
+  };
+
+  scoreboardWatchers.push(newClient);
+
+  req.on('close', () => {
+    scoreboardWatchers = scoreboardWatchers.filter(client => client.id !== clientId);
+  });
+  
+};
+
+const updateScoreboard = async() => {
+  const playerListContent = await ejs.renderFile('./views/partials/player-list.ejs', {scoreboard});
+  scoreboardWatchers.forEach(client => client.res.write(`data: ${playerListContent.replace(/\n/g, '')}\n\n`));
+}
+
+// player events
 
 let players = [];
 
@@ -219,11 +251,13 @@ const playerEventsHandler = (req, res) => {
 }
 
 const sendEventsToPlayers = (data) => {
-  players.forEach(client => client.res.write(`data: ${JSON.stringify(data)}\n\n`))
+  players.forEach(client => client.res.write(`data: ${data}\n\n`))
 }
 
+// masters events
+
 let masters = [];
-let mastersLastEvent;
+let mastersLastEvent; // for saving the last event to send on first request
 
 const masterEventsHandler = (req, res) => {
   const headers = {
@@ -233,7 +267,7 @@ const masterEventsHandler = (req, res) => {
   };
   res.writeHead(200, headers);
 
-  res.write(`data: ${mastersLastEvent}\n\n`);
+  res.write(`data: ${mastersLastEvent}\n\n`); // send the saved event
 
   const clientId = Date.now();
 
@@ -258,11 +292,15 @@ const sendEventsToMaster = (data) => {
   masters.forEach(client => client.res.write(`data: ${data}\n\n`));
 }
 
+// Events routes for different usecases
+
 app.get('/events/:client', (req, res) => {
   if (req.params.client === 'player') {
     playerEventsHandler(req, res);
   } else if (req.params.client === 'master') {
     masterEventsHandler(req, res);
+  } else if (req.params.client === 'playerlist') {
+    scoreboardEventsHandler(req, res);
   }
 });
 
@@ -276,33 +314,50 @@ app.get('/join', (req, res) => {
 
 // Game
 
-let scoreboard = [];
+// Array to keep track of the scores
+let scoreboardArray = [];
+// Proxy for updating scoreboard event if the scoreboard changes
+let scoreboard = new Proxy(scoreboardArray, {
+  set: function (target, key, value) {
+    updateScoreboard();
+    target[key] = value;
+    return true;
+  },
+});
 
+// route for andding players and display first question
 app.post('/player', (req, res) => {
 
   const nickname = req.body.nickname;
 
+  // save nickname is a cookie
   res.cookie('nickname', nickname);
   
   if (scoreboard.some(player => player.nickname === nickname )) {
+    // if player exists display error
     res.render('pages/join', { error: "Speler bestaat al", docTitle: 'Join een quiz | The Movie Poster Quiz'});
   } else {
+    // add player to scoreboard and render the player page
     scoreboard.push({nickname: nickname, points: 0});
     res.render('pages/player', {docTitle: 'Quiz speler | The Movie Poster Quiz'});
   }
 });
 
+// route for checking answers, displaying next question or scoreboard
 app.post('/answer', (req, res) => {
+  // get the answer
   const nickname = req.cookies.nickname;
   const question = req.body.question;
   const answer = req.body.answer;
   const correctAnswer = req.body.correctAnswer;
 
+  // give player a point if answer matches teh correct answer
   if (answer == correctAnswer) {
     const player = scoreboard.find(player => player.nickname == nickname); 
     player.points++;
   }
 
+  // render the player page
   res.render('pages/player', {docTitle: 'Quiz speler | The Movie Poster Quiz'});
 
 });
@@ -320,25 +375,34 @@ const timer = (time) => {
   return new Promise(resolve => setTimeout(resolve, time));
 }
 
-// Game
+// Game (controls the actual quiz)
 app.post('/quiz-master', async (req, res) => {
 
+  // render the quiz master template
   await res.render('pages/quiz-master', {docTitle: 'Quiz | The Movie Poster Quiz'});
 
+  // get the time for each question
+  const questionTime = req.body['questions-time'] * 1000;
+
+  // loop for the given amount of questions
   for (let i = 1; i <= req.body['questions-amount']; i++) {
 
+    // render and send countdown template
     const countdownContent = await ejs.renderFile('./views/partials/timer.ejs', {time: 3000});
 
     sendEventsToPlayers(countdownContent.replace(/\n/g, ''));
     sendEventsToMaster(countdownContent.replace(/\n/g, ''));
 
+    // wait the same amount as the countdown
     await timer(3000);
 
+    // get the movie data
     const movies = [await getRandomMovie(req.params.id), await getRandomMovie(req.params.id), await getRandomMovie(req.params.id), await getRandomMovie(req.params.id)];
     const shuffledMovies = shuffle(movies);
     const correctMovie = movies.find(movie => movie.empty_poster !== null);
 
-    const questionMasterContent = await ejs.renderFile('./views/partials/master_question.ejs', {correctMovie, i, shuffledMovies, time: 15000});
+    // render and send the question template
+    const questionMasterContent = await ejs.renderFile('./views/partials/master_question.ejs', {correctMovie, i, shuffledMovies, time: questionTime});
 
     sendEventsToMaster(questionMasterContent.replace(/\n/g, ''));
 
@@ -346,17 +410,21 @@ app.post('/quiz-master', async (req, res) => {
 
     sendEventsToPlayers(questionPlayerContent.replace(/\n/g, ''));
 
-    await timer(15000);
+    // wait
+    await timer(questionTime);
   
   }
 
+  // sort the scoreboard from highest to lowest
   scoreboard.sort((a, b) => b.points - a.points);
 
+  // render and send the scoreboard template
   const scoreboardContent = await ejs.renderFile('./views/partials/scoreboard.ejs', {scoreboard});
 
   sendEventsToMaster(scoreboardContent.replace(/\n/g, ''));
   sendEventsToPlayers(scoreboardContent.replace(/\n/g, ''));
 
+  //empty the scoreboard for the next game
   scoreboard = [];
 
 });
@@ -371,8 +439,10 @@ app.get('/posters', async (req, res) => {
   console.log('The movie is: ' + movie.title)
 });
 
+// reroute the favicon to the png version
 app.get('/favicon.ico', (req, res) => res.redirect('images/movie-poster-quiz-logo_favicon.png'));
 
+// Route for creating/updating the movies.json
 app.get('/getmovies', async(req, res) => {
   await getMovies();
   res.send('movies loaded');

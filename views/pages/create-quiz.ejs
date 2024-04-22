@@ -4,6 +4,7 @@
 <body>
 	<header><img src="/images/movie-poster-quiz-logo.svg" alt=""></header>
 	<main>
+		<ul class="player-list"></ul>
 		<div class="create-form">
 			<h1>Maak een quiz</h1>
 			<form action="/quiz-master" method="post">
@@ -15,12 +16,19 @@
 				<div class="input-group">
 					<label>
 						Aantal vragen
-						<input type="number" name="questions-amount" value="10" min="1">
+						<input type="number" name="questions-amount" value="10" min="1" max="100">
+					</label>
+				</div>
+				<div class="input-group">
+					<label>
+						Tijd per vraag
+						<input type="number" name="questions-time" value="15" min="5" max="20"><span>sec.</span>
 					</label>
 				</div>
 				<button>Start quiz</button>
 			</form>
 		</div>
 	</main>
+	<script src="/scripts/create.js"></script>
 </body>
 </html>
