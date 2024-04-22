@@ -31,8 +31,9 @@ npm start
 5. Laad nieuwe films door naar `localhost:3000/getmovies` te gaan.
 
 
-## 💡 Mijn idee
-Mijn concept is een quiz applicatie zoals Kahoot, maar dan met filmposters. Net als Kahoot is er één quiz master en meerdere spelers. Elke vraag bestaat uit een random filmposter, waarbij het de juiste titel moet worden gekozen. Naast de juiste titel staan er nog drie andere random film titels als mogelijke antwoorden.
+## 💡 Het concept
+![The Movie Poster Quiz](./readme-images/movie-poster-quiz-title.webp)
+The Movie poster quiz is een quiz app waarbij meerdere spelers tegen elkaar spelen om de juiste film titel bij een poster te kiezen. Een beetje zoals Kahoot, maar dan met filmposters. Net als Kahoot is er één quiz master en meerdere spelers. Elke vraag bestaat uit een random filmposter, waarbij het de juiste titel moet worden gekozen. Naast de juiste titel staan er nog drie andere random film titels als mogelijke antwoorden.
 
 ## 🎥 Filmtitels en -posters
 De filmtitels en filmposters haal ik van [*The Movie DB API*](https://developer.themoviedb.org/reference/intro/getting-started).
@@ -218,8 +219,67 @@ Dit is eigenlijk de belangrijkste. Vanuit hier wordt de hele quiz aangestuurd. Z
 2. Na de loop wordt het *scoreboard* gesorteerd en geladen met de scores van alles spelers.
 
 
+## 🧑‍🔧 Gebruikte technieken
+
+### 🎲 Randomizen van een array
+Om de quiz leuk te houden, moeten de mogelijke antwoorden door elkaar gehusseld worden. Dit is niet iets wat makkelijk kan in *JavaScript*, maar na een tijdje googelen had ik een simpele oplossing gevonden:
+
+```js
+array.sort( () => .5 - Math.random() );
+```
+*https://stackoverflow.com/a/18650169*
+
+Er stond een waarschuwing bij omdat het niet efficiënt zou zijn, maar dat maakte voor mij niet zo veel uit.
+
+Later bleek, na heel vaak de quiz te hebben gespeeld (omdat ik ook niet weet welke poster van welke film is), dat het antwoord nog altijd optie 1 was.
+
+Uiteindelijk heb ik een andere techniek gevonden: het Fisher-Yates algoritme. [(Aleti, 2022)](https://www.tutorialspoint.com/what-is-fisher-yates-shuffle-in-javascript)
+
+Het werkt heel simpel: haal een *random item* uit de ene *array* en zet die in de ander.
+```js
+// Function for shuffling an array (fisher-yates)
+const shuffle = (array) => {
+  // copy the array to a temporary array
+  let temp = [...array];
+  // create a new array for returning
+  let newArray = [];
+  // for every item in the array pick random one, put in the new array, remove from temporary array
+  for (let i = 0; i < array.length; i++) {
+    const randomIndex = Math.floor(Math.random() * temp.length);
+    newArray.push(temp[randomIndex]);
+    temp.splice(randomIndex, 1);
+  }
+  return newArray;
+}
+```
+
+### 🤾 Deelnemers tonen bij *master*
+Voor de gebruikerservaring is goed om je naam in de quiz te zien verschijnen na het *joinen*, bovendien kan je dan zien wie er allemaal mee doet. Ik had hiervoor alle nodige data, de spelers in het *scoreboard array* en een plekje op *create quiz* pagina. Het probleem zat 'm in hoe ik de data op die plek kon krijgen.
+
+Hiervoor heb ik een nieuwe *events endpoint* gemaakt, met een bijbehorende *eventsHandler*. De bedoeling was dat hierin de data van het *scoreboard* zou worden meegegeven. Hiervoor moest ik weten, wanneer die *array* veranderd.
+
+Volgens [Banerjee op Medium (2021)](https://medium.com/@suvechhyabanerjee92/watch-an-object-for-changes-in-vanilla-javascript-a5f1322a4ca5) zijn hier een aantal manieren voor. De volgens mij enige juiste opties is om een *proxy* te gebruiken, daarom heb ik van de *scoreboard array* een *proxy* gemaakt. Hierin wordt elke keer als iets wordt aangepast de `updateScoreboard()` aangeroepen.
+
+```js
+// Array to keep track of the scores
+let scoreboardArray = [];
+// Proxy for updating scoreboard event if the scoreboard changes
+let scoreboard = new Proxy(scoreboardArray, {
+  set: function (target, key, value) {
+    updateScoreboard();
+    target[key] = value;
+    return true;
+  },
+});
+```
+
+
+
 
 ## ⛲️ Bronnen
 - The Movie Database. (z.d.). Getting Started. https://developer.themoviedb.org/reference/intro/getting-started
 - Alvarez, S. (2021, 22 maart). How To Use Server-Sent Events in Node.js to Build a Realtime App. DigitalOcean. https://www.digitalocean.com/community/tutorials/nodejs-server-sent-events-build-realtime-app
 - Using server-sent events - Web APIs | MDN. (2023, 26 februari). MDN Web Docs. https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events
+- Aleti, N. (2022, 23 september). What is Fisher–Yates shuffle in JavaScript? Tutorialspoint. https://www.tutorialspoint.com/what-is-fisher-yates-shuffle-in-javascript
+- How to randomize (shuffle) a JavaScript array? (z.d.). Stack Overflow. https://stackoverflow.com/a/18650169
+- Banerjee, S. (2021, 14 december). Watch an object for changes in Vanilla JavaScript - Suvechhya Banerjee - Medium. Medium. https://medium.com/@suvechhyabanerjee92/watch-an-object-for-changes-in-vanilla-javascript-a5f1322a4ca5
