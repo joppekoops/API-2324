@@ -1,0 +1,14 @@
+<div class="question">
+	<hgroup>
+		<p>Vraag <%= i %>:</p>
+		<h1>Van welke film is deze poster?</h1>
+	</hgroup>
+	<img src="https://image.tmdb.org/t/p/original<%= correctMovie.empty_poster.file_path %>" alt="" class="poster">
+	<div class="answer-buttons">
+		<button disabled name="answer" value="<%= shuffledMovies[0].title %>"><%= shuffledMovies[0].title %></button>
+		<button disabled name="answer" value="<%= shuffledMovies[1].title %>"><%= shuffledMovies[1].title %></button>
+		<button disabled name="answer" value="<%= shuffledMovies[2].title %>"><%= shuffledMovies[2].title %></button>
+		<button disabled name="answer" value="<%= shuffledMovies[3].title %>"><%= shuffledMovies[3].title %></button>
+	</div>
+	<p class="question-countdown" style="--time: <%= time / 1000 %>;"><%= time / 1000 %></p>
+</div>

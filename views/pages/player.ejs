@@ -1,36 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="/styles/index.css">
-	<title>Document</title>
-</head>
-<body>
-	<h1>Hello Player</h1>
+<html lang="nl">
+	<%- include('../partials/head.ejs') %>
 
-	<form class="answer-buttons">
-		<input type="hidden" name="player" value="1" id="player-id-input">
-		<input type="hidden" name="question" value="1" id="question-number-input">
-		<button name="answer" value="1">Antwoord 1</button>
-		<button name="answer" value="2">Antwoord 2</button>
-		<button name="answer" value="3">Antwoord 3</button>
-		<button name="answer" value="3">Antwoord 4</button>
-	</form>
+	<body>
+		<header><img src="/images/movie-poster-quiz-logo_klein.svg" alt=""></header>
+		<main>
+			<%- include("../partials/wait.ejs") %>
+		</main>
+		<script src="/scripts/player.js"></script>
+		<script src="/scripts/countdown.js"></script>
+	</body>
 
-	<script>
-		const eventSrc = new EventSource('/events');
-		const buttons = document.querySelectorAll('button');
-		const questionNumberInput = document.getElementById('question-number-input');
-
-		eventSrc.onmessage = async (event) => {
-			const data = await(JSON.parse(event.data));
-			buttons.forEach((button, i) => {
-				button.innerHTML = data.answers[i];
-				questionNumberInput.value = data.question;
-			});
-
-		}
-	</script>
-</body>
 </html>

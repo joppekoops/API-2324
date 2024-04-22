@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="nl">
+<%- include('../partials/head.ejs') %>
+<body class="join">
+	<header><img src="/images/movie-poster-quiz-logo.svg" alt=""></header>
+	<main>
+		<div class="join-form">
+			<h1>Join een quiz</h1>
+			<form action="/player" method="post">
+				<!-- <label>
+					Quiz code
+					<input type="text" name="quiz-code">
+				</label> -->
+				<div class="input-group">
+					<label>
+						Nickname
+						<input type="text" name="nickname" required>
+					</label>
+					<% if(locals.error) { %>
+						<p class="error"><%= error %></p>
+					<% } %>
+				</div>
+				<button>Join quiz</button>
+			</form>
+		</div>
+	</main>
+</body>
+</html>

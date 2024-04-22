@@ -1,0 +1,8 @@
+<form class="answer-buttons" method="post" action="/answer">
+	<input type="hidden" name="question" value="<%= i %>">
+	<input type="hidden" name="correctAnswer" value="<%= correctMovie.title %>">
+	<button name="answer" value="<%= shuffledMovies[0].title %>"><%= shuffledMovies[0].title %></button>
+	<button name="answer" value="<%= shuffledMovies[1].title %>"><%= shuffledMovies[1].title %></button>
+	<button name="answer" value="<%= shuffledMovies[2].title %>"><%= shuffledMovies[2].title %></button>
+	<button name="answer" value="<%= shuffledMovies[3].title %>"><%= shuffledMovies[3].title %></button>
+</form>

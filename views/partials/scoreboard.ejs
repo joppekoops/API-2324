@@ -1,0 +1,12 @@
+<div class="scoreboard">
+	<h1>Scoreboard</h1>
+
+	<ul>
+		<% scoreboard.forEach(player => {%>
+			<li>
+				<div><%= player.nickname %></div>
+				<div><%= player.points %></div>
+			</li>
+		<% }) %>
+	</ul>
+</div>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="nl">
+<%- include('../partials/head.ejs') %>
+<body>
+	<header><img src="/images/movie-poster-quiz-logo.svg" alt=""></header>
+	<main>
+		<div class="create-form">
+			<h1>Maak een quiz</h1>
+			<form action="/quiz-master" method="post">
+				<!-- <label>
+					Quiz code
+					<input type="hidden" name="quiz-code" value="<%= data.quizCode %>">
+					<input type="text" value="<%= data.quizCode %>" disabled>
+				</label> -->
+				<div class="input-group">
+					<label>
+						Aantal vragen
+						<input type="number" name="questions-amount" value="10" min="1">
+					</label>
+				</div>
+				<button>Start quiz</button>
+			</form>
+		</div>
+	</main>
+</body>
+</html>
