@@ -21,6 +21,8 @@ app
   .use('/', sirv('static'))
   .listen(3000);
 
+console.log('app running on port 3000');
+
 
 // MOVIE FUNCTIONS
 
@@ -369,4 +371,9 @@ app.get('/posters', async (req, res) => {
   console.log('The movie is: ' + movie.title)
 });
 
-app.get('/favicon.ico', (req, res) => res.redirect('images/movie-poster-quiz-logo_favicon.png'))
+app.get('/favicon.ico', (req, res) => res.redirect('images/movie-poster-quiz-logo_favicon.png'));
+
+app.get('/getmovies', async(req, res) => {
+  await getMovies();
+  res.send('movies loaded');
+});

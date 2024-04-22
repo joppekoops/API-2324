@@ -1,5 +1,33 @@
 # API @cmda-minor-web 2023 - 2024
 
+## Installatie
+1. Clone de code
+```
+git clone https://github.com/joppekoops/API-2324.git
+```
+
+2. Installeer node modules
+```
+npm i
+```
+
+3. Voor *The Movie DB API* is een key nodig in een *env* bestand in de root.
+
+Voorbeeld: 
+```
+MOVIEDB_API_KEY="key"
+```
+
+Deze kan je krijgen via https://developer.themoviedb.org/reference/intro/getting-started
+
+4. Start de app
+```
+npm start
+```
+
+5. Laad nieuwe films door naar `localhost:3000/getmovies` te gaan.
+
+
 ![Een laptop met de quiz master app met een poster en een telefoon met vier mogelijke titels](./readme-images/mockup.webp)
 
 ## 💡 Mijn idee

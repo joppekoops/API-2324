@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "lint": "eslint . --ext .js",
-    "dev": "nodemon server.js --ext js,mjs,cjs,css"
+    "dev": "nodemon server.js --ext js,mjs,cjs,css",
+    "start": "node server.js"
   },
   "license": "MIT",
   "dependencies": {
