@@ -19,9 +19,7 @@ app
   .use(urlencoded())
   .use(cookieParser())
   .use('/', sirv('static'))
-  .listen(3000);
-
-console.log('app running on port 3000');
+  .listen(process.env.PORT || 3000, () => console.log('Server running...'));
 
 
 // MOVIE FUNCTIONS

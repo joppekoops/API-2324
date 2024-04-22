@@ -1,0 +1,11 @@
+.gcloudignore
+.gitignore
+.github
+.git
+node_modules
+README.md
+readme-images
+examples
+movies.json
+.editorconfig
+.eslintrc.json
