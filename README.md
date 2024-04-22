@@ -3,7 +3,7 @@
 ![Een laptop met de quiz master app met een poster en een telefoon met vier mogelijke titels](./readme-images/mockup.webp)
 
 ## 💡 Mijn idee
-Mijn concept is een quiz applicatie zoals Kahoot, maar dan met filmposters. Net als kahoot is er één quiz master en meerdere spelers. Elke vraag bestaat uit een random filmposter, waarbij het de juiste titel moet worden gekozen. Naast de juiste titel staan er nog drie andere random film titels als mogelijke antwoorden.
+Mijn concept is een quiz applicatie zoals Kahoot, maar dan met filmposters. Net als Kahoot is er één quiz master en meerdere spelers. Elke vraag bestaat uit een random filmposter, waarbij het de juiste titel moet worden gekozen. Naast de juiste titel staan er nog drie andere random film titels als mogelijke antwoorden.
 
 ## 🎥 Filmtitels en -posters
 De filmtitels en filmposters haal ik van [*The Movie DB API*](https://developer.themoviedb.org/reference/intro/getting-started).
@@ -75,7 +75,7 @@ const getMoviePoster = async (id) => {
 
 ```
 
-Al deze functionaliteiten heb ik in een **aantal verschillende functies** gezet, die de uitkomst *returnen*, voor makkelijk hergebruik:
+Al deze functionaliteiten heb ik in een **aantal verschillende functies** gezet, die de uitkomst teruggeven, voor makkelijk hergebruik:
 
 - ```getMovies()``` geeft de top 500 films.
 - ```getMoviePoster(id)``` geeft een poster terug bij een film ID.
@@ -132,7 +132,7 @@ eventSrc.onmessage = async (event) => {
 ```
 
 ## 🎮 Het spel
-Nadat de losse functionaliteiten waaren uitgezocht ben ik begonnen met het maken van het spel zelf. Het spel bestaat uit vijf *endpoints*:
+Nadat de losse functionaliteiten waren uitgezocht ben ik begonnen met het maken van het spel zelf. Het spel bestaat uit vijf *endpoints*:
 
 - ```/join``` om als speler een spel te *joinen*,
 - ```/player``` voor het spel als speler,
@@ -143,7 +143,7 @@ Nadat de losse functionaliteiten waaren uitgezocht ben ik begonnen met het maken
 ### ➕ ***Join***
 ![Een telefoon met het join scherm van de movie poster quiz](./readme-images/mockup_join.webp)
 
-Het *joinen* van het spel kan met een simpel formulier, waar de speler zijn *nickname* kan invullen. Dit formulier wordt verstuurd naar ```/player```. Als de speler al bestaat, wordt daar opnieuw het formulier gerendered met een error dat de speler al bestaat.
+Het *joinen* van het spel kan met een simpel formulier, waar de speler zijn *nickname* kan invullen. Dit formulier wordt verstuurd naar ```/player```. Als de speler al bestaat, wordt daar opnieuw het formulier gerenderd met een error dat de speler al bestaat.
 
 ### 🤾 ***Player***
 ![Drie telefoons met drie states van de quiz. Het wachten, het aftellen en de vier mogelijke titels](./readme-images/mockup_player.webp)
@@ -165,14 +165,14 @@ Daarna wordt hier of de volgende vraag getoond of het *scoreboard* als de quiz i
 ### ***Create Quiz***
 ![Laptop met het formulier om een quiz te maken](./readme-images/mockup_create.webp)
 
-Via deze *route* kan een quiz worden aangemaakt. Orgineel zouden hier meer opties komen te staan, maar om te kunnen focussen op een goed werkende quiz, heb ik deze voor nu weg gelaten.
+Via deze *route* kan een quiz worden aangemaakt. Origineel zouden hier meer opties komen te staan, maar om te kunnen focussen op een goed werkende quiz, heb ik deze voor nu weg gelaten.
 
 Opties zouden kunnen zijn:
-- quiz code, om meerder quizen tegelijkertijd te kunnen hebben en
+- quiz code, om meerder quizzen tegelijkertijd te kunnen hebben en
 - tijd per vraag.
 
 ### 🧑‍🏫 ***Quiz Master***
-Dit is eigenlijk de belangrijkste. Vanuit hier word de hele quiz aangestuurd. Zodra deze *endpoint* wordt geopend start de quiz, en worden vanuit hier alle vragen naar gebruikers verstuurd. Dit gaat in een aantal stappen:
+Dit is eigenlijk de belangrijkste. Vanuit hier wordt de hele quiz aangestuurd. Zodra deze *endpoint* wordt geopend start de quiz, en worden vanuit hier alle vragen naar gebruikers verstuurd. Dit gaat in een aantal stappen:
 
 1. Dit begint bij een *for loop* die zo vaak loopt als het opgegeven aantal vragen.
 
@@ -186,7 +186,7 @@ Dit is eigenlijk de belangrijkste. Vanuit hier word de hele quiz aangestuurd. Zo
 
 	2. Hierna worden vier random films uitgekozen, waarvan er eentje als juiste wordt gekozen. Deze worden naar beide de *quiz master* en de spelers verstuurd, maar wel in een andere template. Bij de *master* zijn zowel de poster als de opties te zien, hoewel er bij de spelers alleen maar vier knoppen zijn.
 
-2. Na de loop wordt het scoreboard gesorteerd en geladen met de scores van alles spelers.
+2. Na de loop wordt het *scoreboard* gesorteerd en geladen met de scores van alles spelers.
 
 
 
