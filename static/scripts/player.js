@@ -7,7 +7,7 @@ eventSrc.onmessage = async (event) => {
 
 	if (event.data != 'undefined') {
 
-		const eventData = JSON.parse(event.data);
+		const eventData = event.data;
 
 		main.innerHTML = eventData;
 	}

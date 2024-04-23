@@ -366,7 +366,7 @@ app.post('/answer', (req, res) => {
 // Create form
 app.get('/create-quiz', (req, res) => {
   // for if multiple quizzes are possible
-  // const randomQuizCode = Math.random().toString(16).slice(10).toUpperCase();
+  const randomQuizCode = Math.random().toString(16).slice(10).toUpperCase();
   res.render('pages/create-quiz', {data: {quizCode: randomQuizCode}, docTitle: 'Maak een quiz | The Movie Poster Quiz'});
 });
 
