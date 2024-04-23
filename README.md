@@ -14,7 +14,7 @@ git clone https://github.com/joppekoops/API-2324.git
 npm i
 ```
 
-3. Voor *The Movie DB API* is een key nodig in een *env* bestand in de root.
+3. Voor *The Movie DB API* is een *key* nodig in een *env* bestand in de *root*.
 
 Voorbeeld: 
 ```
@@ -32,6 +32,8 @@ npm start
 
 
 ## 💡 Het concept
+De meest standaard apps die je met data van een *API* kan maken zijn erg saai. Je haalt de data van de *API* en vult daarmee een *template*. Hoera, de data die eerst in *JSON*-formaat stond is nu iets leesbaarder voor de gebruiker. Om het interessanter te maken kwam ik met het volgende concept:
+
 ![The Movie Poster Quiz](./readme-images/movie-poster-quiz-title.webp)
 The Movie poster quiz is een quiz app waarbij meerdere spelers tegen elkaar spelen om de juiste film titel bij een poster te kiezen. Een beetje zoals Kahoot, maar dan met filmposters. Net als Kahoot is er één quiz master en meerdere spelers. Elke vraag bestaat uit een random filmposter, waarbij het de juiste titel moet worden gekozen. Naast de juiste titel staan er nog drie andere random film titels als mogelijke antwoorden.
 
@@ -192,7 +194,7 @@ if (answer == correctAnswer) {
 
 Daarna wordt hier of de volgende vraag getoond of het *scoreboard* als de quiz is afgelopen.
 
-### ***Create Quiz***
+### ❓ ***Create Quiz***
 ![Laptop met het formulier om een quiz te maken](./readme-images/mockup_create.webp)
 
 Via deze *route* kan een quiz worden aangemaakt. Origineel zouden hier meer opties komen te staan, maar om te kunnen focussen op een goed werkende quiz, heb ik deze voor nu weg gelaten.
@@ -221,7 +223,55 @@ Dit is eigenlijk de belangrijkste. Vanuit hier wordt de hele quiz aangestuurd. Z
 
 ## 🧑‍🔧 Gebruikte technieken
 
-### 🎲 Randomizen van een array
+### *Templates* over *server-sent events*
+*Server-sent events* ondersteund alleen om platte tekst te versturen. Eerst had ik dit gebruikt om de data in JSON-formaat te sturen door op de server `JSON.stringify()` te doen en op de client weer `JSON.parse()`. Dit werkte prima, alleen moest er nu ook een deel van de *templating* in de *front-end* worden gedaan.
+Een betere oplossing zou zijn om de *templating* in de *back-end* te doen, maar *HTML* verzenden ging niet uit zichzelf goed. Hoewel het wel platte tekst is, verstoren nieuwe regels ook de events, omdat een nieuwe regel karakter de *event* afsluit. Na heel lang nadenken waarom alleen de eerste regel van mijn *event* over kwam, was de oplossing eigenlijk heel simpel:
+
+```js
+sendEventsToPlayers(renderedTemlate.replace(/\n/g, ''));
+```
+
+Gewoon even de nieuwe regels verwijderen.
+
+### ⏱️ Timer
+Tot nu toe had ik alleen de timer in de *back-end*, maar al gauw werd duidelijk dat de spelers ook een timer nodig hadden. Hiervoor geef ik de lengte aan door die in de template in te vullen en gebruik ik een klein *front-end* scriptje om die vervolgens af te tellen:
+
+```js
+const mutationObserver = new MutationObserver((entries) => {
+	const countdown = document.querySelector('.countdown');
+
+	if (countdown) { //check if countdown exists
+		let time = parseInt(countdown.textContent);
+		const timerInterval = setInterval(() => {
+
+			if(time <= 1) { //if 1 stop
+				clearInterval(timerInterval);
+			} else {
+				time--; //countdown
+				countdown.innerHTML = time; //put back into element
+			}
+		}, 1000);
+	}
+});
+```
+
+### 🎶 Muziek en Geluiden
+Voor een beetje aankleding rondom een functionerende quiz heb ik wat styling gedaan, maar daarnaast ook muziek en geluiden toegevoegd. Dit kon makkelijk in het script voor de timer, omdat elke keer als er een timer is, er ook geluid moet zijn. Omdat de geluiden wel alleen moeten afspelen, maak ik de audio objecten aan in het *master script*.
+
+master.js:
+```js
+const countdownSound = new Audio('../sounds/countdown.mp3');
+const music = new Audio('../sounds/music.mp3');
+```
+
+countdown.js:
+```js
+if(countdownSound) { //check for sound, because only the master has them, defined in master.js
+	countdownSound.play();
+}
+```
+
+### 🎲 Randomizen van een *array*
 Om de quiz leuk te houden, moeten de mogelijke antwoorden door elkaar gehusseld worden. Dit is niet iets wat makkelijk kan in *JavaScript*, maar na een tijdje googelen had ik een simpele oplossing gevonden:
 
 ```js
